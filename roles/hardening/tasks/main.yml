@@ -1,0 +1,27 @@
+---
+- name: Ensure automatic security updates are enabled
+  dnf:
+    name: dnf-automatic
+    state: present
+
+- name: Harden sshd - disable root login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin'
+    line: 'PermitRootLogin no'
+  notify: Restart sshd
+
+- name: Ensure fail2ban is installed (if available)
+  dnf:
+    name: fail2ban
+    state: present
+  ignore_errors: true
+
+- name: Disable unused services
+  systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  loop:
+    - postfix
+  ignore_errors: true

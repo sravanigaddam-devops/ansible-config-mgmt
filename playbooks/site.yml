@@ -1,0 +1,21 @@
+---
+- name: Configure web servers
+  hosts: webservers
+  become: true
+
+  pre_tasks:
+    - name: Ensure dnf cache is updated (Amazon Linux 2023)
+      dnf:
+        update_cache: true
+      when: ansible_os_family == "RedHat"
+
+  roles:
+    - hardening
+    - webserver
+
+  post_tasks:
+    - name: Ensure nginx is running
+      systemd:
+        name: nginx
+        state: started
+        enabled: true

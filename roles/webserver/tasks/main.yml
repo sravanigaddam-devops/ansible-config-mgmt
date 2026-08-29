@@ -1,0 +1,45 @@
+---
+- name: Install nginx
+  dnf:
+    name: nginx
+    state: present
+
+- name: Deploy nginx config
+  copy:
+    dest: /etc/nginx/nginx.conf
+    content: |
+      user nginx;
+      worker_processes auto;
+      error_log /var/log/nginx/error.log;
+      pid /run/nginx.pid;
+      events { worker_connections 1024; }
+      http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+        log_format main '$remote_addr - $remote_user [$time_local] "$request"';
+        access_log /var/log/nginx/access.log main;
+        server {
+          listen 80;
+          root /usr/share/nginx/html;
+          index index.html;
+          location /health { return 200 'ok'; add_header Content-Type text/plain; }
+        }
+      }
+    notify: Restart nginx
+
+- name: Deploy index.html
+  copy:
+    dest: /usr/share/nginx/html/index.html
+    content: |
+      <html><body>
+      <h1>Configured by Ansible - {{ inventory_hostname }}</h1>
+      <p>Project: sravani-devops | Env: dev</p>
+      <p>Date: {{ ansible_date_time.iso8601 }}</p>
+      </body></html>
+  notify: Restart nginx
+
+- name: Open firewall for http (if firewalld present)
+  service:
+    name: firewalld
+    state: started
+  ignore_errors: true
