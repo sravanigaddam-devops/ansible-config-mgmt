@@ -25,7 +25,7 @@
           location /health { return 200 'ok'; add_header Content-Type text/plain; }
         }
       }
-    notify: Restart nginx
+  notify: Restart nginx
 
 - name: Deploy index.html
   copy:
@@ -38,8 +38,28 @@
       </body></html>
   notify: Restart nginx
 
-- name: Open firewall for http (if firewalld present)
-  service:
+- name: Ensure firewalld is running
+  systemd:
     name: firewalld
     state: started
+    enabled: true
+  ignore_errors: true
+
+- name: Open http/https in firewalld
+  firewalld:
+    service: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - http
+    - https
+  ignore_errors: true
+
+- name: Open app port 8080 in firewalld
+  firewalld:
+    port: 8080/tcp
+    permanent: true
+    immediate: true
+    state: enabled
   ignore_errors: true
