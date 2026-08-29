@@ -1,0 +1,5 @@
+﻿<html><body>
+<h1>Configured by Ansible - web-1</h1>
+<p>Project: sravani-devops | Env: dev</p>
+<p>Date: 2026-08-29T09:26:39Z</p>
+</body></html>

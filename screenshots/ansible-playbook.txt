@@ -1,0 +1,30 @@
+ 9         update_cache: true
+10       when: ansible_os_family == "RedHat"
+               ^ column 13
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+ok: [web-1]
+
+TASK [hardening : Ensure automatic security updates are enabled] ***************
+ok: [web-1]
+
+TASK [hardening : Harden sshd - disable root login] ****************************
+ok: [web-1]
+
+TASK [hardening : Ensure fail2ban is installed (if available)] *****************
+ok: [web-1]
+
+TASK [hardening : Disable unused services] *************************************
+[ERROR]: Task failed: Module failed: Could not find the requested service postfix: host
+Origin: /mnt/c/Users/srava/OneDrive/Documents/Default Project/ansible-config-mgmt/roles/hardening/tasks/main.yml:20:3
+
+18   ignore_errors: true
+19
+20 - name: Disable unused services
+     ^ column 3
+
+failed: [web-1] (item=postfix) => {"ansible_loop_var": "item", "changed": false, "item": "postfix", "msg": "Could not find the requested service postfix: host"}
+...ignoring
+
+TASK [webserver : Install nginx] ***********************************************
